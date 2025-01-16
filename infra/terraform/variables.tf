@@ -13,9 +13,6 @@ variable "provisioner" {
 variable "ec2_keypair_public_key" {
   type = string
 }
-variable "ec2_keypair_private_key" {
-  type = string
-}
 variable "ec2_instance_type" {
   type = string
   default = "t2.micro"
