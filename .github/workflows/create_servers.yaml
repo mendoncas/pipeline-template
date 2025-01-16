@@ -37,6 +37,8 @@ jobs:
         run: terraform -chdir=infra/terraform/ validate
       - name: terraform apply
         run: terraform -chdir=infra/terraform/ apply --auto-approve
+      - name: upload terraform state
+        run: aws s3 cp infra/terraform/.terraform.lock.hcl s3://${{ inputs.bucket_name }}
       - name: primary SSH key
         env:
           SSH_AUTH_SOCK: /tmp/ssh_agent.sock
@@ -46,5 +48,3 @@ jobs:
           chmod 600 /home/runner/.ssh/id_rsa
           ssh-agent -a $SSH_AUTH_SOCK > /dev/null	
           ssh-add /home/runner/.ssh/id_rsa
-      - name: upload terraform state
-        run: aws s3 cp infra/terraform/.terraform.lock.hcl s3://${{ inputs.bucket_name }}
