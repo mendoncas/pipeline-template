@@ -27,8 +27,8 @@ jobs:
           aws-region: ${{inputs.aws_region}}
       - name: checkout do repo
         uses: actions/checkout@v4
-      #- name: configurar bucket
-      #  run: sed -i "s|your-bucket-name|${{ inputs.bucket_name }}|" backend.tf
+      - name: configurar bucket
+        run: sed -i "s|template-bucket|${{ inputs.bucket_name }}|" bucket.tf
       - name: adicionar chave pública
         run: echo "ec2_keypair_public_key=\"${{ secrets.EC2_PUBLIC_KEY }}\"" > terraform.tfvars 
       - name: terraform init
