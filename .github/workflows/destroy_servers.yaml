@@ -28,14 +28,14 @@ jobs:
       - name: Repository checkout
         uses: actions/checkout@v4
       - name: Update bucket name
-        run: sed -i "s|your-bucket-name|${{ inputs.bucket_name }}|" backend.tf
+        run: sed -i "s|template-bucket-sunset|${{ inputs.bucket_name }}|" backend.tf
       - name: Create terraform.tfvars
-        run: echo "ec2_keypair_public_key=\"${{ secrets.EC2_PUBLIC_KEY }}\"" > terraform.tfvars
+        run: echo "ec2_keypair_public_key=\"${{ secrets.EC2_PUBLIC_KEY }}\"" > infra/terraform/terraform.tfvars
       - name: Download terraform.lock.hcl
-        run: aws s3 cp s3://${{ inputs.bucket_name }}/.terraform.lock.hcl .
+        run: aws s3 cp s3://${{ inputs.bucket_name }}/.terraform.lock.hcl infra/terraform
       - name: Initialize Terraform Dependencies
-        run: terraform init
+        run: terraform -chdir=infra/terraform init
       - name: Delete Terraform resources
-        run: terraform destroy --auto-approve
+        run: terraform -chdir=infra/terraform destroy --auto-approve
       - name: Delete state file and lock file on S3
         run: aws s3 rm --recursive s3://${{ inputs.bucket_name }}/state && aws s3 rm s3://${{ inputs.bucket_name }}/.terraform.lock.hcl
