@@ -30,7 +30,7 @@ jobs:
       - name: configurar bucket
         run: sed -i "s|template-bucket-susnset|${{ inputs.bucket_name }}|" infra/terraform/backend.tf
       - name: adicionar chave pública
-        run: echo "ec2_keypair_public_key=\"${{ secrets.EC2_PUBLIC_KEY }}\"" > infra/terraform terraform.tfvars 
+        run: echo "ec2_keypair_public_key=\"${{ secrets.EC2_PUBLIC_KEY }}\"" > infra/terraform/terraform.tfvars 
       - name: terraform init
         run: terraform -chdir=infra/terraform/ init
       - name: terraform validate
