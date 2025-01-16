@@ -1,0 +1,50 @@
+name: Criar servidores ec2
+run-name: Criar servidores ec2 na região ${{inputs.aws_region}}
+
+on:
+  workflow_dispatch:
+    inputs:
+      aws_region: 
+        type: string
+        required: true
+        default: us-east-1
+      bucket_name:
+        type: string
+        required: true
+        default: template-bucket
+
+jobs:
+  create:
+    runs-on: ubuntu-latest
+    steps:
+      - name: setup Terraform CLI
+        uses: hashicorp/setup-terraform@v3
+      - name: configurar credenciais da AWS
+        uses: aws-actions/configure-aws-credentials@v4
+        with: 
+          aws-access-key-id: ${{secrets.AWS_ACCESS_KEY_ID}}
+          aws-secret-access-key: ${{secrets.AWS_SECRET_ACCESS_KEY}}
+          aws-region: ${{inputs.aws_region}}
+      - name: checkout do repo
+        uses: actions/checkout@v4
+      #- name: configurar bucket
+      #  run: sed -i "s|your-bucket-name|${{ inputs.bucket_name }}|" backend.tf
+      - name: adicionar chave pública
+        run: echo "ec2_keypair_public_key=\"${{ secrets.EC2_PUBLIC_KEY }}\"" > terraform.tfvars 
+      - name: terraform init
+        run: terraform init
+      - name: terraform validate
+        run: terraform validate
+      - name: terraform apply
+        run: terraform apply --auto-approve
+      - name: primary SSH key
+        env:
+          SSH_AUTH_SOCK: /tmp/ssh_agent.sock
+        run: |
+          mkdir -p /home/runner/.ssh
+          echo "${{ secrets.EC2_PRIVATE_KEY }}" > /home/runner/.ssh/id_rsa
+          chmod 600 /home/runner/.ssh/id_rsa
+          ssh-agent -a $SSH_AUTH_SOCK > /dev/null	
+          ssh-add /home/runner/.ssh/id_rsa
+      - name: upload terraform state
+        run: aws s3 cp .terraform.lock.hcl s3://${{ inputs.bucket_name }}
