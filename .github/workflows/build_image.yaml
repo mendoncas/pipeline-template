@@ -36,5 +36,13 @@ jobs:
         aws-region: ${{vars.aws_region}}
     - name: Download ansible inventory
       run: aws s3 cp s3://${{ vars.bucket_name }}/inventory .
+    - name: primary SSH key
+      env:
+        SSH_AUTH_SOCK: /tmp/ssh_agent.sock
+      run: |
+        mkdir -p /home/runner/.ssh
+        echo "${{ secrets.EC2_PRIVATE_KEY }}" > /home/runner/.ssh/id_rsa
+        chmod 600 /home/runner/.ssh/id_rsa
+        ssh-add /home/runner/.ssh/id_rsa
     - name: update
       run: ansible-playbook -i inventory infra/ansible/pull_and_run.yaml
