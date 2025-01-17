@@ -26,8 +26,9 @@ jobs:
     runs-on: ubuntu-latest
     needs: docker
     steps:
-    - name: ondeeuto
-      run: ls
+    - name: checkout repo
+      uses: actions/checkout@v4
+    - name: Download ansible inventory
+      run: aws s3 cp s3://${{ vars.bucket_name }}/inventory .
     - name: update
-      run: ansible-playbook -i infra/terraform/inventory infra/ansible/pull_and_run.yaml
-                                                    
+      run: ansible-playbook -i inventory infra/ansible/pull_and_run.yaml
