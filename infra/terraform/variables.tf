@@ -19,6 +19,7 @@ variable "ec2_instance_type" {
 }
 variable "ami_id" {
   type = string
+  # default = "ami-04b4f1a9cf54c11d0" 
   default = "ami-0e9107ed11be76fde"
 }
 ######################################################################
