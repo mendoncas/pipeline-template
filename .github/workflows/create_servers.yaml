@@ -51,10 +51,10 @@ jobs:
       - name: install dependencies
         env: 
           SSH_AUTH_SOCK: /tmp/ssh_agent.sock
-        run: ansible-playbook -i inventory ../ansible/install_dependencies.yaml
+        run: ansible-playbook -i inventory infra/ansible/install_dependencies.yaml
       - name: run project
         env: 
           SSH_AUTH_SOCK: /tmp/ssh_agent.sock
-        run: ansible-playbook -i inventory ../ansible/pull_and_run.yaml
+        run: ansible-playbook -i inventory infra/ansible/pull_and_run.yaml
       - name: print inventory
         run: cat inventory
