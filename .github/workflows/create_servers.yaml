@@ -1,4 +1,4 @@
-name: Criar servidores ec2
+name: Create resources
 run-name: Criar servidores ec2 na região ${{inputs.aws_region}}
 
 on:
