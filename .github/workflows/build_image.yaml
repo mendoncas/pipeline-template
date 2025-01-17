@@ -24,6 +24,10 @@ jobs:
 
   update-images:
     runs-on: ubuntu-latest
+    needs: docker
     steps:
+    - name: ondeeuto
+      run: pwd
     - name: update
       run: ansible-playbook -i infra/terraform/inventory infra/ansible/pull_and_run.yaml
+                                                    
