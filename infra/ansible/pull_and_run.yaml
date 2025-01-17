@@ -1,0 +1,11 @@
+- hosts: all
+  become: true
+  tasks:
+    - name: run container
+      docker_container:
+        name: app
+        state: started
+        image: "tequillasunset/pipeline-template:latest"
+        pull: true
+        ports:
+          - "80:3000"

@@ -48,3 +48,11 @@ jobs:
           chmod 600 /home/runner/.ssh/id_rsa
           ssh-agent -a $SSH_AUTH_SOCK > /dev/null	
           ssh-add /home/runner/.ssh/id_rsa
+      - name: install dependencies
+        env: 
+          SSH_AUTH_SOCK: /tmp/ssh_agent.sock
+        run: ansible-playbook -i inventory ../ansible/install_dependencies.yaml
+      - name: run project
+        env: 
+          SSH_AUTH_SOCK: /tmp/ssh_agent.sock
+        run: ansible-playbook -i inventory ../ansible/pull_and_run.yaml
