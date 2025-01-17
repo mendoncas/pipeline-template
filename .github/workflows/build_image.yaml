@@ -27,7 +27,7 @@ jobs:
     needs: docker
     steps:
     - name: ondeeuto
-      run: pwd
+      run: ls
     - name: update
       run: ansible-playbook -i infra/terraform/inventory infra/ansible/pull_and_run.yaml
                                                     
