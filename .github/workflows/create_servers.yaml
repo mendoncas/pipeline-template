@@ -15,28 +15,38 @@ jobs:
     steps:
       - name: setup Terraform CLI
         uses: hashicorp/setup-terraform@v3
+
       - name: configurar credenciais da AWS
         uses: aws-actions/configure-aws-credentials@v4
         with: 
           aws-access-key-id: ${{secrets.AWS_ACCESS_KEY_ID}}
           aws-secret-access-key: ${{secrets.AWS_SECRET_ACCESS_KEY}}
           aws-region: ${{inputs.aws_region}}
+
       - name: checkout do repo
         uses: actions/checkout@v4
+
       - name: configurar bucket
         run: sed -i "s|template-bucket-susnset|${{ vars.bucket_name }}|" infra/terraform/backend.tf
+
       - name: adicionar chave pública
         run: echo "ec2_keypair_public_key=\"${{ secrets.EC2_PUBLIC_KEY }}\"" > infra/terraform/terraform.tfvars 
+
       - name: terraform init
         run: terraform -chdir=infra/terraform/ init
+
       - name: terraform validate
         run: terraform -chdir=infra/terraform/ validate
+
       - name: terraform apply
         run: terraform -chdir=infra/terraform/ apply --auto-approve
+
       - name: upload terraform state
         run: aws s3 cp infra/terraform/.terraform.lock.hcl s3://${{ vars.bucket_name }}
+
       - name: upload ansible inventory 
         run: aws s3 cp infra/terraform/inventory s3://${{ vars.bucket_name }}
+
       - name: primary SSH key
         env:
           SSH_AUTH_SOCK: /tmp/ssh_agent.sock
@@ -46,10 +56,12 @@ jobs:
           chmod 600 /home/runner/.ssh/id_rsa
           ssh-agent -a $SSH_AUTH_SOCK > /dev/null	
           ssh-add /home/runner/.ssh/id_rsa
+
       - name: install dependencies
         env: 
           SSH_AUTH_SOCK: /tmp/ssh_agent.sock
         run: ansible-playbook -i infra/terraform/inventory infra/ansible/install_dependencies.yaml
+
       - name: run project
         env: 
           SSH_AUTH_SOCK: /tmp/ssh_agent.sock
