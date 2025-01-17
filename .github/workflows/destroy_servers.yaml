@@ -1,5 +1,5 @@
-name: Clean up all resources created by Terraform and Ansible
-run-name: Clean up all resources created by Terraform and Ansible in your AWS ${{ inputs.aws_region }} region
+name: Destroy resources
+run-name: Destroy resources 
 
 on:
   workflow_dispatch:
@@ -8,10 +8,6 @@ on:
         type: string
         required: true
         default: us-east-1
-      bucket_name:
-        type: string
-        required: true
-        default: state-bucket
 
 jobs:
   destroy:
@@ -28,14 +24,14 @@ jobs:
       - name: Repository checkout
         uses: actions/checkout@v4
       - name: Update bucket name
-        run: sed -i "s|template-bucket-sunset|${{ inputs.bucket_name }}|" infra/terraform/backend.tf
+        run: sed -i "s|template-bucket-sunset|${{ vars.bucket_name }}|" infra/terraform/backend.tf
       - name: Create terraform.tfvars
         run: echo "ec2_keypair_public_key=\"${{ secrets.EC2_PUBLIC_KEY }}\"" > infra/terraform/terraform.tfvars
       - name: Download terraform.lock.hcl
-        run: aws s3 cp s3://${{ inputs.bucket_name }}/.terraform.lock.hcl infra/terraform
+        run: aws s3 cp s3://${{ vars.bucket_name }}/.terraform.lock.hcl infra/terraform
       - name: Initialize Terraform Dependencies
         run: terraform -chdir=infra/terraform init
       - name: Delete Terraform resources
         run: terraform -chdir=infra/terraform destroy --auto-approve
       - name: Delete state file and lock file on S3
-        run: aws s3 rm --recursive s3://${{ inputs.bucket_name }}/state && aws s3 rm s3://${{ inputs.bucket_name }}/.terraform.lock.hcl
+        run: aws s3 rm --recursive s3://${{ vars.bucket_name }}/state && aws s3 rm s3://${{ vars.bucket_name }}/.terraform.lock.hcl
