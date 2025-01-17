@@ -14,7 +14,7 @@ func main(){
   }
   message, ok := os.LookupEnv("MESSAGE")
   if !ok {
-    message = "This is the server´s default message!"
+    message = "This is the server´s default message! :3"
   }
   http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request){
     io.WriteString(w, "Hello, DevOps! " + message)
