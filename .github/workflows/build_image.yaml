@@ -45,4 +45,6 @@ jobs:
         ssh-agent -a $SSH_AUTH_SOCK > /dev/null	
         ssh-add id_rsa
     - name: update
+      env: 
+        SSH_AUTH_SOCK: /tmp/ssh_agent.sock
       run: ansible-playbook -i inventory infra/ansible/pull_and_run.yaml
