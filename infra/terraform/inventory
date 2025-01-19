@@ -1,0 +1,9 @@
+[servers]
+3.231.27.63
+3.237.178.238
+
+[all:vars]
+ansible_connection=ssh
+ansible_user=ec2-user
+ansible_ssh_private_key_file=~/.ssh/id_rsa
+ansible_ssh_common_args='-o StrictHostKeyChecking=no'

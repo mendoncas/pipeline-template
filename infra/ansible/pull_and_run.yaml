@@ -9,5 +9,6 @@
         restart: true
         image: "tequillasunset/pipeline-template:latest"
         pull: always
+        env_file: /etc/dockerenv
         ports:
           - "80:3000"
